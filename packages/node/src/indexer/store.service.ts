@@ -17,6 +17,8 @@ import {
   getFkConstraint,
   smartTags,
 } from '../utils/sync-helper';
+import { MetadataRepo, MetadataFactory } from './entities/Metadata.entity';
+import { PoiRepo, PoiFactory } from './entities/Poi.entity';
 
 const logger = getLogger('store');
 
@@ -33,6 +35,8 @@ export class StoreService {
   private modelIndexedFields: IndexField[];
   private schema: string;
   private modelsRelations: GraphQLModelsRelations;
+  private poiRepo: PoiRepo;
+  private metaDataRepo: MetadataRepo;
 
   constructor(private sequelize: Sequelize, private config: NodeConfig) {}
 
@@ -135,6 +139,9 @@ export class StoreService {
           throw new Error('Relation type is not supported');
       }
     }
+    this.poiRepo = PoiFactory(this.sequelize, schema);
+    this.metaDataRepo = MetadataFactory(this.sequelize, schema);
+
     await this.sequelize.sync();
     for (const query of extraQueries) {
       await this.sequelize.query(query);
